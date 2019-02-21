@@ -1,6 +1,9 @@
 FROM debian:stretch-20190122-slim
 
-RUN apt-get update && apt-get install -y wget xz-utils
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends \
+		wget xz-utils libc6 libgcc1 libgssapi-krb5-2 libicu57 libssl1.0.2 libstdc++6 zlib1g \
+                ca-certificates apt-transport-https dirmngr gnupg python sudo build-essential
 
 RUN mkdir runtimes
 
@@ -30,6 +33,14 @@ RUN cd runtimes && \
 	
 ENV PATH "/runtimes/dotnet-sdk:${PATH}"
 
+RUN dotnet help
+
+# Install Mono
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+RUN echo "deb https://download.mono-project.com/repo/debian stable-stretch/snapshots/5.18.0 main" | tee /etc/apt/sources.list.d/mono-official-stable.list
+RUN apt-get update && apt-get install -y --no-install-recommends mono-devel fsharp msbuild ca-certificates-mono
+ENV FrameworkPathOverride /usr/lib/mono/4.5/
+
 # Install Node
 RUN cd runtimes && \
 	wget https://nodejs.org/dist/v11.8.0/node-v11.8.0-linux-x64.tar.xz && \
@@ -37,3 +48,7 @@ RUN cd runtimes && \
 	rm node-v11.8.0-linux-x64.tar.xz
 
 ENV PATH "/runtimes/node-v11.8.0-linux-x64/bin:${PATH}"
+
+
+# User
+RUN groupadd --gid 1000 rtuser && useradd --uid 1000 --gid rtuser --create-home rtuser
