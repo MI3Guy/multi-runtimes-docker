@@ -13,7 +13,7 @@ RUN cd runtimes && \
 	tar xf openjdk-12.0.1_linux-x64_bin.tar.gz && \
 	rm openjdk-12.0.1_linux-x64_bin.tar.gz
 
-ENV PATH "/runtimes/jdk-11.0.2/bin:${PATH}"
+ENV PATH "/runtimes/jdk-12.0.1/bin:${PATH}"
 
 # Install SBT
 RUN cd runtimes && \
